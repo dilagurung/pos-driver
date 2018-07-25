@@ -216,8 +216,6 @@ public static String executePowerShell(String comPort) throws IOException
     stderr.close();
     return line;
 }
-
-
 }
 /*
 

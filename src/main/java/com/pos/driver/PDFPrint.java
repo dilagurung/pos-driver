@@ -113,18 +113,6 @@ public class PDFPrint implements Printable
 
     public static void main(String args[]) throws Exception
     {
-
-    /*
-     boolean tell=true;
-
-     new PrinterService().printString("POS-80C", "Helo world", "12255", 22.552 );
-
-     if(tell)
-    	 return;
-
-    	*/
-
-
         new PDFPrint().printBarCode(printerName, "Channel Head", "125444", 222.55);
         URL url = new URL("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXzqSvoANigosyTpH-A2kNJ8y9-DSpzcnYmNHQGHHEvcQzwQynIQ");
         InputStream in = new BufferedInputStream(url.openStream());
