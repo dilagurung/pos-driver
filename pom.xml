@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.pos-driver</groupId>
+    <artifactId>pos-driver</artifactId>
+    <version>pos-driver 1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.apache.clerezza.ext</groupId>
+            <artifactId>org.json.simple</artifactId>
+            <version>0.4</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.11</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/fontbox -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+            <version>2.0.11</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.barbecue/barbecue -->
+        <dependency>
+            <groupId>net.sourceforge.barbecue</groupId>
+            <artifactId>barbecue</artifactId>
+            <version>1.5-beta1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.imgscalr/imgscalr-lib -->
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
+        </dependency>
+
+
+
+    </dependencies>
+
+    <build>
+    <plugins>
+
+    <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>repackage</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+    </plugins>
+    </build>
+
+</project>
