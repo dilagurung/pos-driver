@@ -3,19 +3,20 @@ package com.pos.driver;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.imgscalr.Scalr;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.imageio.ImageIO;
 import javax.print.*;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,21 +29,23 @@ public class HttpDriver
 
     static boolean isWeighDriverOn=false;
     static String printerName;
-        public static void main(String[] args) throws Exception {
-
-PrintingExample.callPrinter();
-/*
+    static String logoName="logo.png";
+        public static void main(String[] args) throws Exception
+        {
             HttpServer server = HttpServer.create(new InetSocketAddress(7070), 0);
             server.createContext("/print-receipt", new MyHandler());
             server.setExecutor(null); // creates a default executor
             server.start();
-*/
 
         }
 static class MyHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException
     {
+        httpExchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        httpExchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS");
+        httpExchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
         String query=httpExchange.getRequestURI().getQuery();
+
         String attribute=query.split("=")[0];
         String value=query.split("=")[1];
         if(value.contains("drawer"))
@@ -70,20 +73,120 @@ static class MyHandler implements HttpHandler {
 
 
             //httpExchange.sendResponseHeaders(200, response.length());
-            httpExchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            httpExchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS");
-            httpExchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
-      /*      httpExchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS");
-            httpExchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
-            httpExchange.sendResponseHeaders(204, -1);
-
-      */
             httpExchange.sendResponseHeaders(200, response.length());
             OutputStream os = httpExchange.getResponseBody();
             os.write(response.getBytes());
             os.close();
             return;
         }
+
+
+        else if(attribute.equals("print-barcode"))
+        {
+            InputStreamReader isr =  new InputStreamReader(httpExchange.getRequestBody(),"utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            int b;
+            StringBuilder buf = new StringBuilder(512);
+            while ((b = br.read()) != -1)
+            {
+                buf.append((char) b);
+            }
+            JSONParser parser = new JSONParser();
+            Object obj = null; try {
+            obj = parser.parse(buf.toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+            JSONObject jsonObject = (JSONObject) obj;
+            System.out.println(jsonObject);
+            String productName="";
+            try {
+                 productName = jsonObject.get("description").toString(); //invoice id
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+            String productId =  jsonObject.get("id").toString();
+            Double price =  Double.parseDouble(jsonObject.get("price").toString());
+            printerName=value;
+            new PDFPrint().printBarCode(printerName, productName, productId, price);
+            br.close();
+            isr.close();
+            String response = "ok";
+            httpExchange.sendResponseHeaders(200, response.length());
+            OutputStream os = httpExchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+        else if(attribute.equals("print-cash-report"))
+        {
+
+
+            InputStreamReader isr =  new InputStreamReader(httpExchange.getRequestBody(),"utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            int b;
+            StringBuilder buf = new StringBuilder(512);
+            while ((b = br.read()) != -1)
+            {
+                buf.append((char) b);
+            }
+            JSONParser parser = new JSONParser();
+            Object obj = null; try {
+            obj = parser.parse(buf.toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+            JSONObject jsonObject = (JSONObject) obj;
+            System.out.println(jsonObject);
+            String org =  jsonObject.get("organization").toString(); //invoice id
+            Double cash =  Double.parseDouble(jsonObject.get("cash").toString());
+            Double cheque =  Double.parseDouble(jsonObject.get("cheque").toString());
+            Double total =  Double.parseDouble(jsonObject.get("total").toString());
+            Double tax =  Double.parseDouble(jsonObject.get("tax").toString());
+            Double subTotal =  Double.parseDouble(jsonObject.get("subTotal").toString());
+            Double taxExempt =  Double.parseDouble(jsonObject.get("taxExempt").toString());
+            String startDate =  jsonObject.get("startDate").toString();
+            String endDate =  jsonObject.get("endDate").toString();
+            String terminal =  jsonObject.get("terminal").toString();
+            String imageURI =  jsonObject.get("imageURI").toString();
+            int numberOfPayments =  Integer.parseInt(jsonObject.get("numberOfPayments").toString());
+            String receiptID =  jsonObject.get("receiptID").toString();
+
+//"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXzqSvoANigosyTpH-A2kNJ8y9-DSpzcnYmNHQGHHEvcQzwQynIQ"
+                URL url = new URL(imageURI);
+            InputStream in = new BufferedInputStream(url.openStream());
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int n = 0;
+            while (-1!=(n=in.read(buffer)))
+            {
+                out.write(buffer, 0, n);
+            }
+            out.close();
+            in.close();
+            byte[] response = out.toByteArray();
+
+            FileOutputStream fos = new FileOutputStream("temp-logo.png");
+            fos.write(response);
+            fos.close();
+            BufferedImage originalImgage = ImageIO.read(new File("temp-logo.png"));
+            ImageIO.write(Scalr.resize(originalImgage, Scalr.Method.AUTOMATIC, 190,100), "png",new File(logoName) );
+            try {
+                new PDFPrint().printCashReport(logoName, org, cash, cheque, subTotal, total, tax, taxExempt, numberOfPayments, startDate, endDate, terminal,receiptID);
+            }
+            catch (Exception e){e.printStackTrace();}
+            br.close();
+            isr.close();
+            httpExchange.sendResponseHeaders(200, "ok".length());
+            OutputStream os = httpExchange.getResponseBody();
+            os.write("ok".getBytes());
+            os.close();
+
+
+        }
+
+
 
         else if(attribute.equals("print"))
         {
@@ -187,6 +290,11 @@ protected  static String weigh(String com)
 
 return "0";
 }
+
+
+
+
+
 
 
 public static String executePowerShell(String comPort) throws IOException

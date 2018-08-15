@@ -110,10 +110,10 @@ public class PDFPrint implements Printable
         return PAGE_EXISTS;
     }
 
-
+/*
     public static void main(String args[]) throws Exception
     {
-        new PDFPrint().printBarCode(printerName, "Channel Head", "125444", 222.55);
+ *//*       new PDFPrint().printBarCode(printerName, "Channel Head", "125444", 222.55);
         URL url = new URL("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXzqSvoANigosyTpH-A2kNJ8y9-DSpzcnYmNHQGHHEvcQzwQynIQ");
         InputStream in = new BufferedInputStream(url.openStream());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -132,11 +132,10 @@ public class PDFPrint implements Printable
         fos.close();
         BufferedImage originalImgage = ImageIO.read(new File("logo.png"));
         ImageIO.write(Scalr.resize(originalImgage, Method.ULTRA_QUALITY, 200), "png",new File(logoName) );
+ *//*    //   new PDFPrint().printCashReport(logoName, "Samuel ", 22.25, 11221.55, 112211.55, 48888.5, 22.5, 48.5, 43, "2017-12-12", "2017-12-12", "TERMINAL A");
 
-        new PDFPrint().printCashReport(logoName, "Samuel ", 22.25, 11221.55, 112211.55, 48888.5, 22.5, 48.5, 43, "2017-12-12", "2017-12-12", "TERMINAL A");
 
-
-    }
+    }*/
 
 
     public static String getSpace(int spaceChar)
@@ -193,7 +192,7 @@ public class PDFPrint implements Printable
 
 
     //fix image size
-    public   boolean printCashReport(String imageName, String org, Double cash,Double cheque,Double subTotal, Double total,Double tax, Double taxExempt, long numberOfPayments,String startDate,String endDate,String terminal) throws Exception
+    public   boolean printCashReport(String imageName, String org, Double cash,Double cheque,Double subTotal, Double total,Double tax, Double taxExempt, long numberOfPayments,String startDate,String endDate,String terminal,String receiptID) throws Exception
     {
         int orgLength=org.length();
         if(orgLength<totalCharSupported)
@@ -237,6 +236,7 @@ public class PDFPrint implements Printable
         addContent(contentStream, PDType1Font.TIMES_BOLD, "Total : ", 12,vInnerSubMargin,hMargin,"");
         addContent(contentStream, PDType1Font.TIMES_BOLD, getLocaleCurrency(total), 12,vInnerSubMargin-vInnerSubMargin,horizonLength-currencyTextShift,"");
         addContent(contentStream, PDType1Font.TIMES_ROMAN, "Number of Payments : ", 12,vSubMargin,hMargin,"");
+        addContent(contentStream, PDType1Font.TIMES_ROMAN, numberOfPayments+"", 12,vSubMargin-vSubMargin,horizonLength-8,"");
         addContent(contentStream, PDType1Font.TIMES_BOLD, "Tax Analysis : ", 12,vSubMargin,hMargin,"");
         addContent(contentStream, PDType1Font.TIMES_BOLD, "Amount", 12,vSubMargin-vSubMargin,horizonLength-5,"");
         addContent(contentStream, PDType1Font.TIMES_ROMAN, "-------------------------------------------------", 12,vInnerSubMargin,hMargin-5,"");
@@ -244,6 +244,7 @@ public class PDFPrint implements Printable
         addContent(contentStream, PDType1Font.TIMES_ROMAN, getLocaleCurrency(taxExempt), 12,vSubMargin-vSubMargin,horizonLength-currencyTextShift,"");
         addContent(contentStream, PDType1Font.TIMES_ROMAN, "-------------------------------------------------", 12,vSubMargin,hMargin-5,"");
         addContent(contentStream, PDType1Font.TIMES_ROMAN, "Receipt/SID : ", 12,vSubMargin,hMargin,"");
+        addContent(contentStream, PDType1Font.TIMES_ROMAN, ""+receiptID, 12,vSubMargin-vSubMargin,horizonLength-42,"");
         addContent(contentStream, PDType1Font.TIMES_BOLD, "Subtotal : ", 12,vSubMargin,hMargin,"");
         addContent(contentStream, PDType1Font.TIMES_BOLD, getLocaleCurrency(subTotal), 12,vSubMargin-vSubMargin,horizonLength-currencyTextShift,"");
         addContent(contentStream, PDType1Font.TIMES_BOLD, "Taxes : ", 12,vSubMargin,hMargin,"");
@@ -252,7 +253,7 @@ public class PDFPrint implements Printable
         addContent(contentStream, PDType1Font.TIMES_BOLD, getLocaleCurrency(total), 12,vSubMargin-vSubMargin,horizonLength-currencyTextShift,"");
         addContent(contentStream, PDType1Font.TIMES_ROMAN, "-------------------------------------------------", 12,vSubMargin,hMargin-5,"");
         addContent(contentStream, PDType1Font.TIMES_ROMAN, "Terminal/IP : ", 12,vSubMargin,hMargin,"");
-        addContent(contentStream, PDType1Font.TIMES_ROMAN, terminal, 12,vSubMargin-vSubMargin,horizonLength-38,"");
+        addContent(contentStream, PDType1Font.TIMES_ROMAN, terminal, 12,vSubMargin-vSubMargin,horizonLength-36,"");
 
         addContent(contentStream, PDType1Font.TIMES_ROMAN, "Start Date : ", 12,vSubMargin,hMargin,"");
         addContent(contentStream, PDType1Font.TIMES_ROMAN, startDate, 12,vSubMargin-vSubMargin,horizonLength-20,"");
@@ -262,10 +263,12 @@ public class PDFPrint implements Printable
         contentStream.close();
 
         //Saving the document
-        document.save("new.pdf");
+        String fileName="new.pdf";
+        document.save(fileName);
         //Closing the document
         document.close();
 
+        print(fileName);
 
         return false;
 
@@ -336,30 +339,8 @@ public class PDFPrint implements Printable
             e.printStackTrace();
         }
 
-
+         print(barCodePDFName);
         //printer code
-        PDDocument document=null;
-        try {
-            document = PDDocument.load(new File(barCodePDFName));
-        } catch (InvalidPasswordException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        PrintService myPrintService = findPrintService(printerName);
-
-        PrinterJob job = PrinterJob.getPrinterJob();
-        job.setPageable(new PDFPageable(document));
-        try {
-            job.setPrintService(myPrintService);
-            job.print();
-
-        } catch (PrinterException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
 
 
@@ -368,7 +349,35 @@ public class PDFPrint implements Printable
     }
 
 
+public void print(String fileName)
+{
 
+
+    PDDocument document=null;
+    try {
+        document = PDDocument.load(new File(fileName));
+    } catch (InvalidPasswordException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+    PrintService myPrintService = findPrintService(printerName);
+
+    PrinterJob job = PrinterJob.getPrinterJob();
+    job.setPageable(new PDFPageable(document));
+    try {
+        job.setPrintService(myPrintService);
+        job.print();
+
+    } catch (PrinterException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+
+
+}
 
 
     private static PrintService findPrintService(String printerName) {
