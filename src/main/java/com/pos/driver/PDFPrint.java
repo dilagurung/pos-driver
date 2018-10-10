@@ -3,11 +3,7 @@ package com.pos.driver;
  * Created by oa on 3/19/2018.
  */
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -38,12 +34,14 @@ import javax.print.SimpleDoc;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 
+import com.sun.image.codec.jpeg.JPEGCodec;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.printing.PDFPageable;
@@ -68,7 +66,7 @@ public class PDFPrint implements Printable
     String barCodeName="barCode.png";
     String barCodePDFName="barCode.pdf";
 
-    static String logoName="logo.png";
+    static String logoName="logo.jpeg";
     int hMargin=10;
     int imageHeight=80;
     int currencyTextShift=0;
@@ -108,6 +106,13 @@ public class PDFPrint implements Printable
         g.drawString("Hello world !", 0, 10);
 
         return PAGE_EXISTS;
+    }
+
+
+    public static void main(String args[]) throws Exception
+    {
+        new PDFPrint().prinBanner();
+
     }
 
 /*
@@ -189,6 +194,137 @@ public class PDFPrint implements Printable
 
         return NumberFormat.getCurrencyInstance(new Locale("es", "ES")).format(value);
     }
+
+
+
+
+
+
+    public   boolean prinBanner() throws Exception
+    {
+       /* InputStream is = new BufferedInputStream(
+                new FileInputStream(new File("logo.png")));
+        BufferedImage image = ImageIO.read(is);
+
+
+
+        Resizer resizer = DefaultResizerFactory.getInstance().getResizer(
+                new Dimension(image.getWidth(), image.getHeight()),
+                new Dimension(1000, 1200));
+        BufferedImage scaledImage = new FixedSizeThumbnailMaker(
+                1000, 1200, false, true).resizer(resizer).make(image);
+
+*/
+
+
+        /*
+
+        com.sun.image.codec.jpeg.JPEGImageDecoder jpegDecoder =  JPEGCodec.createJPEGDecoder (new FileInputStream(new File("logo1.jpeg")));
+
+        BufferedImage image = jpegDecoder.decodeAsBufferedImage();
+*/
+
+        //ImageIO.write(Scalr.resize(image, Method.AUTOMATIC, 1000), "png",new File("logo1.png") );
+      //  BufferedImage scaledImage = Scalr.resize(image, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_EXACT, 1600, 1000);
+        //ImageIO.write(scaledImage,"png",new File("abc.png"));
+        int orgLength="ddddddddd".length();
+        if(orgLength<totalCharSupported)
+        {
+            spaceChar=(totalCharSupported-orgLength)/2;
+        }
+        String space=getSpace(spaceChar*2);
+
+        //Loading an existing document
+        PDDocument document = new PDDocument();
+        //Retrieving the pages of the document
+        PDPage page = new PDPage(PDRectangle.A4);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+ //       PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+/*
+        contentStream.beginText();
+        //Setting the font to the Content stream
+        contentStream.setFont(PDType1Font.TIMES_BOLD, 20);
+        contentStream.newLineAtOffset(0,0);
+        String text = "Close Cash Report";
+     //   contentStream.showText(text);
+       contentStream.endText();*/
+        currentHeightCursor=1;
+        String originalFileName="coke-original.jpg";
+        PDImageXObject pdImage = PDImageXObject.createFromFile(originalFileName,document);
+        document.addPage(page);
+        float heightCursor=654;
+        Dimension scaledDim = getScaledDimension(new Dimension(pdImage.getWidth(),  pdImage.getHeight()), new Dimension(180, 100));
+        contentStream.drawXObject(pdImage, 0, 654, 595, 188.97f);
+        contentStream.drawXObject(pdImage, 0, heightCursor-=200, 595, 188.97f);
+        contentStream.drawXObject(pdImage, 0, heightCursor-=200, 595, 188.97f);
+        contentStream.drawXObject(pdImage, 0, heightCursor-=200, 595, 188.97f);
+
+        //contentStream.drawi
+        //contentStream.drawImage(pdImage, hMargin, currentHeightCursor);
+        /*addContent(contentStream, PDType1Font.TIMES_ROMAN, "ddddddddd", 15,vMargin,0,space);
+        addContent(contentStream, PDType1Font.TIMES_BOLD, "Payment Reports", 12,vSubMargin,hMargin,"");
+        addContent(contentStream, PDType1Font.TIMES_BOLD, "Amount", 12,vSubMargin-vSubMargin,horizonLength-5,"");
+        */
+        contentStream.beginText();
+        //Setting the font to the Content stream
+
+        contentStream.setNonStrokingColor(Color.white);
+        contentStream.setStrokingColor(Color.black);
+        PDType0Font font = PDType0Font.load(document, new File("007ARAP.TTF"));
+        contentStream.setFont(font, 22.5f);
+        contentStream.newLineAtOffset(490,top+205);
+        String text = "reredfdf";
+        contentStream.showText(text);
+        //contentStream.drawString(text);
+        //byte[] commands = text.getBytes();
+       // commands[1] = (byte) 128;
+        //contentStream.appendRawCommands(commands);
+        contentStream.endText();
+
+        contentStream.close();
+
+        //Saving the document
+        String fileName="new2.pdf";
+        document.save(fileName);
+        //Closing the document
+        document.close();
+
+       // print(fileName);
+  return false;
+    }
+
+    private static Dimension getScaledDimension(Dimension imgSize, Dimension boundary) {
+        int original_width = imgSize.width;
+        int original_height = imgSize.height;
+        int bound_width = boundary.width;
+        int bound_height = boundary.height;
+        int new_width = original_width;
+        int new_height = original_height;
+
+        // check if width needs to be scaled
+        if (original_width > bound_width) {
+            new_width = bound_width;
+            new_height = (new_width * original_height) / original_width;
+        }
+
+        // then check height still needs to be scaled
+        if (new_height > bound_height) {
+            new_height = bound_height;
+            new_width = (new_height * original_width) / original_height;
+        }
+
+        return new Dimension(new_width, new_height);
+    }
+
+
+
+
+
+
+
+
+
+
 
 
     //fix image size
