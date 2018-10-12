@@ -198,10 +198,124 @@ public class PDFPrint implements Printable
 
 
 
+    public int countCharacterOccurence(String _string,char _char)
+    {
+        int counter=0;
+        for( int i=0; i<_string.length(); i++ ) {
+            if( _string.charAt(i) == _char ) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
 
 
     public   boolean prinBanner() throws Exception
     {
+
+
+        String textToBePrinted="cfdf / a'afnfO{ bz}+sf] pkxf/";
+        int zeroCharCount=0;
+        int halfCharCount=0;
+        char [] zeroChar={'[',']','\'',',','=','}','|','+','F','"'};
+        char [] halfChar={'-','_','.','L','M','Q','l','f',' '};
+        char [] spaceChar={' '};
+
+
+
+        //extract first 12 character
+        //extract the last occurence of space near to 10 if its greater than 10. make it part of second line
+
+        String [] strings=new String[3];
+
+        String temp="";
+        strings[0]=textToBePrinted.substring(0,13);
+        int index=strings[0].lastIndexOf(' ');
+        strings[0]=strings[0].substring(0,index);
+
+        strings[1]=textToBePrinted.substring(index,13);
+        index=strings[1].lastIndexOf(' ');
+        strings[1]=strings[1].substring(0,index);
+
+        strings[2]=textToBePrinted.substring(index,13);
+        index=strings[2].lastIndexOf(' ');
+        strings[2]=strings[2].substring(0,index);
+
+
+
+
+
+
+
+        for( int i=0;i<zeroChar.length;i++)
+        {
+
+            zeroCharCount+=countCharacterOccurence(textToBePrinted,zeroChar[i]);
+        }
+        for( int i=0;i<halfChar.length;i++)
+        {
+            halfCharCount+=countCharacterOccurence(textToBePrinted,halfChar[i]);
+        }
+
+        if(true)
+        {
+            System.out.println(textToBePrinted.length());
+            System.out.println(halfCharCount);
+            System.out.println(zeroCharCount);
+            System.out.println(textToBePrinted.length()-((halfCharCount/2)+zeroCharCount));
+            return false;
+        }
+
+
+        //first find the first occurence of space if its smaller than 10,
+        //similialy second
+
+        //non breaking string
+        //now we have total characters
+        // if quotient is equal to 1 or 2 or 3
+        //define coordinates accordingly
+        //in case one append in middle
+        // inc case two start coordinate from 30 percent
+        // if quotient is 2 or 3
+
+  /*      for( int i=0;i<spaceChar.length;i++)
+        {
+
+            charCount+=countCharacterOccurence(textToBePrinted,zeroChar[i]);
+        }
+*/
+
+/*
+        Font customFont =null;
+        customFont = Font.createFont(Font.TRUETYPE_FONT, new File("007ARAP.TTF")).deriveFont(120f);
+
+        final BufferedImage image = ImageIO.read(new File("coke-original.png").toURL());
+
+        Graphics graphics = image.getGraphics();
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(customFont);
+
+
+        //if character length is x start y coordinate from x
+        //String text1=new String(MimeUtility.encodeText("रि ता ", "utf-8","B"));f increases on ra in nepali consume same space
+
+        graphics.drawString("dfof d]/f] ", 2015, 215);
+        graphics.drawString("cfdfsf] nflu", 2015, 300);
+
+
+        //graphics.drawString("ld", 2020, 260);
+        graphics.dispose();
+
+        ImageIO.write(image, "png", new File("test.png"));
+
+        if(true)
+            return false;
+
+*/
+
+
+
        /* InputStream is = new BufferedInputStream(
                 new FileInputStream(new File("logo.png")));
         BufferedImage image = ImageIO.read(is);
@@ -228,12 +342,13 @@ public class PDFPrint implements Printable
       //  BufferedImage scaledImage = Scalr.resize(image, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_EXACT, 1600, 1000);
         //ImageIO.write(scaledImage,"png",new File("abc.png"));
         int orgLength="ddddddddd".length();
+        /*
         if(orgLength<totalCharSupported)
         {
             spaceChar=(totalCharSupported-orgLength)/2;
         }
         String space=getSpace(spaceChar*2);
-
+*/
         //Loading an existing document
         PDDocument document = new PDDocument();
         //Retrieving the pages of the document
@@ -256,8 +371,8 @@ public class PDFPrint implements Printable
         Dimension scaledDim = getScaledDimension(new Dimension(pdImage.getWidth(),  pdImage.getHeight()), new Dimension(180, 100));
         contentStream.drawXObject(pdImage, 0, 654, 595, 188.97f);
         contentStream.drawXObject(pdImage, 0, heightCursor-=200, 595, 188.97f);
-        contentStream.drawXObject(pdImage, 0, heightCursor-=200, 595, 188.97f);
-        contentStream.drawXObject(pdImage, 0, heightCursor-=200, 595, 188.97f);
+//        contentStream.drawXObject(pdImage, 0, heightCursor-=200, 595, 188.97f);
+  //      contentStream.drawXObject(pdImage, 0, heightCursor-=200, 595, 188.97f);
 
         //contentStream.drawi
         //contentStream.drawImage(pdImage, hMargin, currentHeightCursor);
@@ -271,10 +386,11 @@ public class PDFPrint implements Printable
         contentStream.setNonStrokingColor(Color.white);
         contentStream.setStrokingColor(Color.black);
         PDType0Font font = PDType0Font.load(document, new File("007ARAP.TTF"));
-        contentStream.setFont(font, 22.5f);
+        contentStream.setFont(font, 24f);
         contentStream.newLineAtOffset(490,top+205);
-        String text = "reredfdf";
-        contentStream.showText(text);
+
+        String text = "d]/f] Kof/f] cfdf sf] Od b\"";
+        contentStream.drawString(text);
         //contentStream.drawString(text);
         //byte[] commands = text.getBytes();
        // commands[1] = (byte) 128;
@@ -284,7 +400,7 @@ public class PDFPrint implements Printable
         contentStream.close();
 
         //Saving the document
-        String fileName="new2.pdf";
+        String fileName="rr.pdf";
         document.save(fileName);
         //Closing the document
         document.close();
