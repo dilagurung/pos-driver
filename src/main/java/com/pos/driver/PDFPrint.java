@@ -212,8 +212,8 @@ public class PDFPrint implements Printable
 
 
     char [] zeroChar={'[',']','\'',',','=','}','|','+','F','"'};
-    char [] halfChar={'-','_','.','L','M','Q','l','f',' '};
-
+    //char [] halfChar={'-','_','.','L','M','Q','l','f',' '};
+    char [] halfChar={'-','_','.','L','M','Q','l','f'};
     //find how many half and zero counts are found while extracting 13 characters
 
 
@@ -222,7 +222,7 @@ public class PDFPrint implements Printable
     {
         //String textToBePrinted=" fdFfFfffffffffdfFFFF";
         int textLength=textToBePrinted.length();
-        int charLineLimit=13;
+        int charLineLimit=6;
         int count=0;
         int icounter=1;
         int deficit=0;
@@ -312,18 +312,6 @@ public class PDFPrint implements Printable
         System.out.println(strings[0]+" "+strings[1]+" "+strings[2]);
 
 */
-
-        //first find the first occurence of space if its smaller than 10,
-        //similialy second
-
-        //non breaking string
-        //now we have total characters
-        // if quotient is equal to 1 or 2 or 3
-        //define coordinates accordingly
-        //in case one append in middle
-        // inc case two start coordinate from 30 percent
-        // if quotient is 2 or 3
-
         Font customFont =null;
         customFont = Font.createFont(Font.TRUETYPE_FONT, new File("007ARAP.TTF")).deriveFont(120f);
 
@@ -337,10 +325,27 @@ public class PDFPrint implements Printable
         //if character length is x start y coordinate from x
         //String text1=new String(MimeUtility.encodeText("रि ता ", "utf-8","B"));f increases on ra in nepali consume same space
         //testString(textToBePrinted);
-        graphics.drawString(testString(textToBePrinted), 2015, 215);
-        /*graphics.drawString(strings[1], 2015, 300);
-        graphics.drawString(strings[2], 2015, 370);
-*/
+        textToBePrinted="cfdf /// / a'afnfO{ bz}+sf] pkxf/";
+
+
+        String []str=new String[3];
+        for(int i=0;i<3;i++) {
+            String testString = testString(textToBePrinted);
+            int lastIndex = testString.lastIndexOf(" ");
+            int immediateIndex = textToBePrinted.substring(testString(textToBePrinted).length(), textToBePrinted.length()).indexOf(" ");
+            if (immediateIndex + lastIndex + (6 - lastIndex) > 6) {
+                textToBePrinted = textToBePrinted.substring(lastIndex + 1, textToBePrinted.length());
+                testString = testString.substring(0, testString.lastIndexOf(" "));
+            }
+            str[i]=testString;
+
+        }
+
+
+        graphics.drawString(str[0], 2015, 215);
+        graphics.drawString(str[1], 2015, 330);
+        graphics.drawString(str[2], 2015, 445);
+
 
         //graphics.drawString("ld", 2020, 260);
         graphics.dispose();
