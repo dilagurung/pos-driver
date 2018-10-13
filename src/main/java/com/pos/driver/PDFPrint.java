@@ -325,9 +325,30 @@ public class PDFPrint implements Printable
         //if character length is x start y coordinate from x
         //String text1=new String(MimeUtility.encodeText("रि ता ", "utf-8","B"));f increases on ra in nepali consume same space
         //testString(textToBePrinted);
-        textToBePrinted="cfdf /// / a'afnfO{ bz}+sf] pkxf/";
+        /*dfof d]/f] cfdfsf] nflu
+
+        d]/f] ;fyL ltd|f] nflu
+
+        d]/f] Kof/f] ldq
+
+        cfdf / a'afnfO{ bz}+sf] pkxf/
+
+    ;'v / ;d[l4sf] d+undo z'e–sfdgf
+
+        sf]s / d
 
 
+
+        I love you
+
+        For my dearest one
+
+        My lovely sister
+
+        To the dearest person in the world
+
+        To my beloved one (Sajana Maharjan)*/
+        textToBePrinted="d]/f] ;fyL ltd|f] nflu";
         String []str=new String[3];
         for(int i=0;i<3;i++) {
             String testString = testString(textToBePrinted);
@@ -337,6 +358,14 @@ public class PDFPrint implements Printable
                 textToBePrinted = textToBePrinted.substring(lastIndex + 1, textToBePrinted.length());
                 testString = testString.substring(0, testString.lastIndexOf(" "));
             }
+            else
+            {
+                textToBePrinted = textToBePrinted.substring(testString.length()-1, textToBePrinted.length());
+                //testString = testString.substring(0, testString.lastIndexOf(" "));
+            }
+
+            System.out.println("test string "+testString+ " "+textToBePrinted);
+
             str[i]=testString;
 
         }
