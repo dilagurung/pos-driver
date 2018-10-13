@@ -112,8 +112,8 @@ public class PDFPrint implements Printable
 
     public static void main(String args[]) throws Exception
     {
-        new PDFPrint().printBanner("cfdf / a'afnfO{ bz}+sf] pkxf/");
-
+        new PDFPrint().printBanner("For my dearest one","en");
+        //new PDFPrint().printBanner("For My Love of liefdd d".replaceAll("  "," "),"en");
     }
 
 /*
@@ -213,16 +213,26 @@ public class PDFPrint implements Printable
 
     char [] zeroChar={'[',']','\'',',','=','}','|','+','F','"'};
     //char [] halfChar={'-','_','.','L','M','Q','l','f',' '};
-    char [] halfChar={'-','_','.','L','M','Q','l','f'};
+    char [] halfCharHindi={'-','_','.','L','M','Q','l','f'};
     //find how many half and zero counts are found while extracting 13 characters
+    char [] halfCharEng={'-',',','.','i','I','l','L'};
 
+    char [] halfChar=null;
 
-
-    public String testString(String textToBePrinted)
+    public String testString(String textToBePrinted,String lang)
     {
+if(lang.equals("en"))
+    halfChar=halfCharEng;
+else
+    halfChar=halfCharHindi;
+
+
         //String textToBePrinted=" fdFfFfffffffffdfFFFF";
         int textLength=textToBePrinted.length();
-        int charLineLimit=6;
+        int charLineLimit=8;
+        if(lang.equals("en"))
+            charLineLimit=8;
+
         int count=0;
         int icounter=1;
         int deficit=0;
@@ -260,12 +270,13 @@ public class PDFPrint implements Printable
         }
 
         System.out.println(deficitCounter);
-        return  textToBePrinted.substring(0,charLineLimit+deficitCounter);
+        //return  textToBePrinted.substring(0,charLineLimit+deficitCounter);
+        return textToBePrinted.substring(0,charLineLimit<textToBePrinted.length()?charLineLimit:textToBePrinted.length()<=(textLength+deficitCounter)?textToBePrinted.length():(textLength+deficitCounter));
     }
 
 
 
-    public   boolean printBanner(String textToBePrinted) throws Exception
+    public   boolean printBanner(String textToBePrinted,String language) throws Exception
     {
 /*
 
@@ -313,7 +324,13 @@ public class PDFPrint implements Printable
 
 */
         Font customFont =null;
+
+        if(language.equals("np"))
         customFont = Font.createFont(Font.TRUETYPE_FONT, new File("007ARAP.TTF")).deriveFont(120f);
+
+        else if(language.equals("en"))
+            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("Gotham-Ultra.ttf")).deriveFont(60f);
+//to be used gotham bold
 
         final BufferedImage image = ImageIO.read(new File("coke-original.png").toURL());
 
@@ -348,19 +365,19 @@ public class PDFPrint implements Printable
         To the dearest person in the world
 
         To my beloved one (Sajana Maharjan)*/
-        textToBePrinted="d]/f] ;fyL ltd|f] nflu";
+       // textToBePrinted="d]/f] ;fyL ltd|f] nflu";
         String []str=new String[3];
         for(int i=0;i<3;i++) {
-            String testString = testString(textToBePrinted);
+            String testString = testString(textToBePrinted,language);
             int lastIndex = testString.lastIndexOf(" ");
-            int immediateIndex = textToBePrinted.substring(testString(textToBePrinted).length(), textToBePrinted.length()).indexOf(" ");
-            if (immediateIndex + lastIndex + (6 - lastIndex) > 6) {
+            int immediateIndex = textToBePrinted.substring(testString(textToBePrinted,language).length(), textToBePrinted.length()).indexOf(" ");
+            if ((immediateIndex + lastIndex + (6 - lastIndex) > 6)&& lastIndex!=-1) {
                 textToBePrinted = textToBePrinted.substring(lastIndex + 1, textToBePrinted.length());
-                testString = testString.substring(0, testString.lastIndexOf(" "));
+                testString = testString.substring(0, testString.lastIndexOf(" ")==0?testString.length():testString.lastIndexOf(" "));
             }
             else
             {
-                textToBePrinted = textToBePrinted.substring(testString.length()-1, textToBePrinted.length());
+                textToBePrinted = textToBePrinted.substring(testString.length(), textToBePrinted.length());
                 //testString = testString.substring(0, testString.lastIndexOf(" "));
             }
 
