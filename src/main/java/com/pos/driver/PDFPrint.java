@@ -35,6 +35,7 @@ import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
+import jdk.nashorn.internal.objects.NativeRegExp;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -111,7 +112,7 @@ public class PDFPrint implements Printable
 
     public static void main(String args[]) throws Exception
     {
-        new PDFPrint().prinBanner();
+        new PDFPrint().printBanner("cfdf / a'afnfO{ bz}+sf] pkxf/");
 
     }
 
@@ -210,63 +211,107 @@ public class PDFPrint implements Printable
     }
 
 
+    char [] zeroChar={'[',']','\'',',','=','}','|','+','F','"'};
+    char [] halfChar={'-','_','.','L','M','Q','l','f',' '};
 
-    public   boolean prinBanner() throws Exception
+    //find how many half and zero counts are found while extracting 13 characters
+
+
+
+    public String testString(String textToBePrinted)
     {
+        //String textToBePrinted=" fdFfFfffffffffdfFFFF";
+        int textLength=textToBePrinted.length();
+        int charLineLimit=13;
+        int count=0;
+        int icounter=1;
+        int deficit=0;
+        int arrear=0;
+        int indexToTravel=0;
+        int deficitCounter=0;
+
+        for(int i=0;i<icounter;i++)
+        {
+            int __zcounter=0;
+            int __hcounter=0;
+            //int __z=((count+(i*charLineLimit))-(count==0?0:1));
+            int __z=(i==0?0:charLineLimit+(deficitCounter-deficit));
+            int _z=(count==0?charLineLimit:__z)+deficit<=textLength?(count==0?charLineLimit:__z)+deficit:textLength;
+            if(__z>textLength)break;
+            for( int j=0;j<zeroChar.length;j++)
+                __zcounter += countCharacterOccurence(textToBePrinted.substring(__z, _z), zeroChar[j]);
 
 
-        String textToBePrinted="cfdf / a'afnfO{ bz}+sf] pkxf/";
+            int __h=(i==0?0:charLineLimit+(deficitCounter-deficit));
+            int _h=(count==0?charLineLimit:__z)+deficit<=textLength?(count==0?charLineLimit:__z)+deficit:textLength;
+
+            for( int k=0;k<halfChar.length;k++)
+                __hcounter += countCharacterOccurence(textToBePrinted.substring(__h, _h), halfChar[k]);
+            deficit=__zcounter+((__hcounter+arrear)/2);
+            if((__hcounter+arrear)%2==1)
+            {
+                arrear=1;
+            }
+            else {arrear=0;}
+            if(deficit>0)
+            icounter++;
+            count++;
+            deficitCounter+=deficit;
+        }
+
+        System.out.println(deficitCounter);
+        return  textToBePrinted.substring(0,charLineLimit+deficitCounter);
+    }
+
+
+
+    public   boolean printBanner(String textToBePrinted) throws Exception
+    {
+/*
+
+        int charLineLimit=13;
+
+
+        //  String textToBePrinted="cfdf / a'afnfO{ bz}+sf] pkxf/";
         int zeroCharCount=0;
         int halfCharCount=0;
-        char [] zeroChar={'[',']','\'',',','=','}','|','+','F','"'};
-        char [] halfChar={'-','_','.','L','M','Q','l','f',' '};
-        char [] spaceChar={' '};
-
-
 
         //extract first 12 character
         //extract the last occurence of space near to 10 if its greater than 10. make it part of second line
 
-        String [] strings=new String[3];
+        for( int i=0;i<zeroChar.length;i++)
+            zeroCharCount+=countCharacterOccurence(textToBePrinted,zeroChar[i]);
+        for( int i=0;i<halfChar.length;i++)
+            halfCharCount+=countCharacterOccurence(textToBePrinted,halfChar[i]);
 
-        String temp="";
-        strings[0]=textToBePrinted.substring(0,13);
+        int totalChars=textToBePrinted.length()-((halfCharCount/2)+zeroCharCount);
+
+        int hz=((halfCharCount/2)+zeroCharCount);
+
+
+
+        //string fetch 13 character ignoring zerocharcount and adding half of halfcharcount
+
+        String _texToBePrinted=textToBePrinted;
+        String [] strings=new String[3];
+        strings[0]=textToBePrinted.substring(0,totalChars<=13?(totalChars+hz):totalChars<=26?((totalChars+hz)/2):totalChars<=39?((totalChars+hz)/3):13);//((textToBePrinted.length()>=charLineLimit?charLineLimit:textToBePrinted.length()))-1);
         int index=strings[0].lastIndexOf(' ');
         strings[0]=strings[0].substring(0,index);
 
-        strings[1]=textToBePrinted.substring(index,13);
+        _texToBePrinted=textToBePrinted.substring(index,textToBePrinted.length()-1);
+
+        strings[1]=_texToBePrinted.substring(0,((_texToBePrinted.length()>=charLineLimit?charLineLimit:_texToBePrinted.length()))-1);
         index=strings[1].lastIndexOf(' ');
         strings[1]=strings[1].substring(0,index);
 
-        strings[2]=textToBePrinted.substring(index,13);
-        index=strings[2].lastIndexOf(' ');
-        strings[2]=strings[2].substring(0,index);
+        _texToBePrinted=textToBePrinted.substring(index,textToBePrinted.length()-1);
+         strings[2]=_texToBePrinted.substring(0,((_texToBePrinted.length()>=charLineLimit?charLineLimit:_texToBePrinted.length()))-1);
+        //index=strings[2].lastIndexOf(' ');
+//        strings[2]=strings[2].substring(0,_texToBePrinted.length()-1);
 
+        System.out.println(strings[0]+" "+strings[1]+" "+strings[2]);
 
-
-
-
-
-
-        for( int i=0;i<zeroChar.length;i++)
-        {
-
-            zeroCharCount+=countCharacterOccurence(textToBePrinted,zeroChar[i]);
-        }
-        for( int i=0;i<halfChar.length;i++)
-        {
-            halfCharCount+=countCharacterOccurence(textToBePrinted,halfChar[i]);
-        }
-
-        if(true)
-        {
-            System.out.println(textToBePrinted.length());
-            System.out.println(halfCharCount);
-            System.out.println(zeroCharCount);
-            System.out.println(textToBePrinted.length()-((halfCharCount/2)+zeroCharCount));
-            return false;
-        }
-
+*/
 
         //first find the first occurence of space if its smaller than 10,
         //similialy second
@@ -279,14 +324,6 @@ public class PDFPrint implements Printable
         // inc case two start coordinate from 30 percent
         // if quotient is 2 or 3
 
-  /*      for( int i=0;i<spaceChar.length;i++)
-        {
-
-            charCount+=countCharacterOccurence(textToBePrinted,zeroChar[i]);
-        }
-*/
-
-/*
         Font customFont =null;
         customFont = Font.createFont(Font.TRUETYPE_FONT, new File("007ARAP.TTF")).deriveFont(120f);
 
@@ -299,10 +336,11 @@ public class PDFPrint implements Printable
 
         //if character length is x start y coordinate from x
         //String text1=new String(MimeUtility.encodeText("रि ता ", "utf-8","B"));f increases on ra in nepali consume same space
-
-        graphics.drawString("dfof d]/f] ", 2015, 215);
-        graphics.drawString("cfdfsf] nflu", 2015, 300);
-
+        //testString(textToBePrinted);
+        graphics.drawString(testString(textToBePrinted), 2015, 215);
+        /*graphics.drawString(strings[1], 2015, 300);
+        graphics.drawString(strings[2], 2015, 370);
+*/
 
         //graphics.drawString("ld", 2020, 260);
         graphics.dispose();
@@ -312,7 +350,6 @@ public class PDFPrint implements Printable
         if(true)
             return false;
 
-*/
 
 
 
